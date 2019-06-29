@@ -1,9 +1,8 @@
 'use strict'
 const lambda = require('./index.js')
-let event = {'alias':'debug'};
+let event = { address: '0xa43e00a4d376d14117e7c97bfb57b54409f9b2b4' };
 let context = null
 let callback = (err) => {
     console.log(err)
 }
-// lambdaのエントリーポイントを呼び出し
 lambda.handler(event, context, callback)
