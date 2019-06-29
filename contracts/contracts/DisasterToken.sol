@@ -1,8 +1,9 @@
 pragma solidity ^0.5.0;
 
 import "../installed_contracts/openzeppelin-solidity/contracts/token/ERC721/ERC721Full.sol";
+import "../installed_contracts/openzeppelin-solidity/contracts/token/ERC721/ERC721Mintable.sol";
 
-contract DisasterToken is ERC721Full {
+contract DisasterToken is ERC721Full, ERC721Mintable {
 
     struct Certificate {
         string title;
@@ -34,19 +35,19 @@ contract DisasterToken is ERC721Full {
             _certificates[tokenId].estimatedMoney);
     }
 
-    function _mint(
+    function mintWithCertificate(
         address to,
         uint256 tokenId,
         string memory title,
         string memory seriousness,
         string memory category,
         string memory date
-    ) internal {
-        super._mint(to, tokenId);
+    ) public onlyMinter returns (bool) {
         _certificates[tokenId].title = title;
         _certificates[tokenId].seriousness = seriousness;
         _certificates[tokenId].category = category;
         _certificates[tokenId].date = date;
+        return mint(to, tokenId);
     }
 
 }
