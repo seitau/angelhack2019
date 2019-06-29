@@ -1,0 +1,25 @@
+{
+  "name": "contracts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "openzeppelin-solidity": "^2.3.0",
+    "babel-polyfill": "^6.26.0",
+    "chai": "^4.2.0",
+    "ethereumjs-abi": "^0.6.7",
+    "ethereumjs-util": "^6.1.0",
+    "ganache-cli": "^6.4.4",
+    "serve": "^6.4.1",
+    "solidity-coverage": "^0.5.11",
+    "truffle-hdwallet-provider": "^1.0.11"
+  }
+}
