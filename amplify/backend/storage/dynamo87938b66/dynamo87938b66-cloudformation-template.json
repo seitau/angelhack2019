@@ -33,15 +33,15 @@
                 "AttributeDefinitions": [
                   
                   {
-                      "AttributeName": "address",
-                      "AttributeType": "S"
+                      "AttributeName": "id",
+                      "AttributeType": "N"
                   } 
                   
                 ],
                 "KeySchema": [
                   
                   {
-                    "AttributeName": "address",
+                    "AttributeName": "id",
                     "KeyType": "HASH"
                   } 
                   

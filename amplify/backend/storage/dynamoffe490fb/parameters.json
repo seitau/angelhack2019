@@ -1,0 +1,7 @@
+{
+    "tableName": "User",
+    "partitionKeyName": "ethAddress",
+    "partitionKeyType": "S",
+    "sortKeyName": "adaAddress",
+    "sortKeyType": "S"
+}

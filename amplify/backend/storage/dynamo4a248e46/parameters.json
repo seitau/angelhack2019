@@ -1,5 +1,0 @@
-{
-    "tableName": "Users",
-    "partitionKeyName": "address",
-    "partitionKeyType": "S"
-}
