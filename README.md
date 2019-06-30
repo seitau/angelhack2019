@@ -1,7 +1,5 @@
 # QuickAid
 
-# ![](https://user-images.githubusercontent.com/32608705/44624670-20951b80-a92f-11e8-8604-fd842b82ba95.png)
-
 ## Team Member
 - Seita Uchimura (seita-uc)
 - Hiroki Nanjo (nandehu0323)
