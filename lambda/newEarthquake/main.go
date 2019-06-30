@@ -1,17 +1,22 @@
 package main
 
 import (
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
+	"strconv"
+
+	"github.com/aws/aws-lambda-go/lambda"
+
+	"github.com/google/uuid"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 
 	"github.com/aws/aws-lambda-go/events"
-
-	"github.com/aws/aws-lambda-go/lambda"
 )
 
 // Request ...
@@ -28,7 +33,7 @@ type Body struct {
 
 // HandleLambdaEvent ...
 func HandleLambdaEvent(r events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	var req Request
+	var req EewData
 	err := json.Unmarshal([]byte(r.Body), &req)
 	if err != nil {
 		log.Println(err)
@@ -36,9 +41,22 @@ func HandleLambdaEvent(r events.APIGatewayProxyRequest) (events.APIGatewayProxyR
 		return events.APIGatewayProxyResponse{StatusCode: 200, Headers: map[string]string{}, Body: string(jsonBytes)}, nil
 	}
 
-	if req.Name == "" || req.EthAddress == "" || req.AdaAddress == "" {
-		jsonBytes, _ := json.Marshal(Body{Result: "No data input."})
-		return events.APIGatewayProxyResponse{StatusCode: 200, Headers: map[string]string{}, Body: string(jsonBytes)}, nil
+	file, err := os.Open("./hypo.csv")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	hypo := map[int]string{}
+
+	for {
+		line, err := reader.Read()
+		if err != nil {
+			break
+		}
+		hypoCode, _ := strconv.Atoi(line[0])
+		hypo[hypoCode] = line[1]
 	}
 
 	sess, err := session.NewSession()
@@ -49,43 +67,36 @@ func HandleLambdaEvent(r events.APIGatewayProxyRequest) (events.APIGatewayProxyR
 	svc := dynamodb.New(sess)
 
 	fmt.Println(req)
-
-	queryParams := &dynamodb.QueryInput{
-		TableName: aws.String("User-test"),
-		ExpressionAttributeNames: map[string]*string{
-			"#UserName": aws.String("username"),
-		},
-		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
-			":username": {
-				S: aws.String(req.Name),
-			},
-		},
-		KeyConditionExpression: aws.String("#UserName=:username"),
-		IndexName:              aws.String("username-index"),
-	}
-
-	queryItem, queryErr := svc.Query(queryParams)
-	if queryErr == nil && *queryItem.Count != 0 {
-		fmt.Println(queryItem)
-		jsonBytes, _ := json.Marshal(Body{Result: "Username already used."})
-		return events.APIGatewayProxyResponse{StatusCode: 200, Headers: map[string]string{}, Body: string(jsonBytes)}, nil
-	}
-	log.Println(queryErr)
+	fmt.Println(hypo[req.Details.Eewinfo.Hypocode])
 
 	putParams := &dynamodb.PutItemInput{
-		TableName: aws.String("User-test"),
+		TableName: aws.String("Disaster-test"),
 		Item: map[string]*dynamodb.AttributeValue{
-			"ethAddress": {
-				S: aws.String(req.EthAddress),
+			"id": {
+				S: aws.String(uuid.New().String()),
 			},
-			"adaAddress": {
-				S: aws.String(req.AdaAddress),
+			"latitude": {
+				N: aws.String(fmt.Sprintf("%g", req.Details.Eewinfo.Latitude)),
 			},
-			"username": {
-				S: aws.String(req.Name),
+			"longitude": {
+				N: aws.String(fmt.Sprintf("%g", req.Details.Eewinfo.Longitude)),
+			},
+			"label": {
+				S: aws.String(hypo[req.Details.Eewinfo.Hypocode]),
+			},
+			"magnitude": {
+				N: aws.String(fmt.Sprintf("%g", req.Details.Eewinfo.Magnitude)),
+			},
+			"depth": {
+				N: aws.String(fmt.Sprintf("%d", req.Details.Eewinfo.Depth)),
+			},
+			"time": {
+				N: aws.String(fmt.Sprintf("%d", req.Details.Eewinfo.OccuredDatetime)),
 			},
 		},
 	}
+
+	fmt.Println(putParams.Item)
 
 	_, putErr := svc.PutItem(putParams)
 	if putErr != nil {

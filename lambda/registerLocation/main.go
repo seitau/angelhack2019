@@ -86,7 +86,7 @@ func HandleLambdaEvent(r events.APIGatewayProxyRequest) (events.APIGatewayProxyR
 		jsonBytes, _ := json.Marshal(Body{Result: fmt.Sprintf("failed to unmarshal Dynamodb Scan Items, %v", err)})
 		return events.APIGatewayProxyResponse{StatusCode: 200, Headers: map[string]string{}, Body: string(jsonBytes)}, nil
 	}
-	fmt.Println(users[0])
+	//fmt.Println(users[0])
 
 	location := &dynamodb.AttributeValue{
 		M: map[string]*dynamodb.AttributeValue{
@@ -108,6 +108,9 @@ func HandleLambdaEvent(r events.APIGatewayProxyRequest) (events.APIGatewayProxyR
 			},
 		},
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":timestamp": location.M["timestamp"],
+			":longitude": location.M["longitude"],
+			":latitude":  location.M["latitude"],
 			":locations": {
 				L: locations,
 			},
@@ -116,7 +119,7 @@ func HandleLambdaEvent(r events.APIGatewayProxyRequest) (events.APIGatewayProxyR
 			},
 		},
 		ReturnValues:     aws.String("ALL_NEW"),
-		UpdateExpression: aws.String("SET location_history = list_append(if_not_exists(location_history, :empty_list), :locations)"),
+		UpdateExpression: aws.String("SET location_history = list_append(if_not_exists(location_history, :empty_list), :locations), recent_timestamp = :timestamp, recent_longitude = :longitude, recent_latitude = :latitude"),
 		TableName:        aws.String("User-test"),
 	}
 

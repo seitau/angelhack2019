@@ -34,7 +34,7 @@
                   
                   {
                       "AttributeName": "id",
-                      "AttributeType": "N"
+                      "AttributeType": "S"
                   } 
                   
                 ],
