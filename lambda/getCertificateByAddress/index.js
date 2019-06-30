@@ -6,12 +6,18 @@ const balanceOfMethodId = "0x70a08231";
 const getCertificateMethodId = "0x70a08231";
 
 exports.handler = async (event, context, callback) => {
-    const body = event.body;
+    let body = event.body;
+    console.log(body);
+    console.log(JSON.parse(body));
+    body = JSON.parse(body);
+    
     console.log(body.address);
     if(!body.hasOwnProperty("address")) {
         console.error('Address property must be specified in the request');
-        const err = new Error('Address property must be specified in the request');
-        callback(err, null);
+        const response = {
+            message: 'Address property must be specified in the request'
+        }
+        return response;
     } 
     try {
         const balanceOfTxData = balanceOfMethodId + web3.eth.abi.encodeParameter('address', body.address).slice(2);
@@ -24,8 +30,10 @@ exports.handler = async (event, context, callback) => {
 
         if(balance === 0) {
             console.error('No certificate is issued to this address');
-            const err = new Error('No certificate is issued to this address');
-            callback(err, null);
+            const response = {
+                message: 'No certificate is issued to this address'
+            }
+            return response;
         }
 
         let certificates = new Array();
@@ -44,6 +52,9 @@ exports.handler = async (event, context, callback) => {
         callback(null, certificates);
     } catch(err) {
         console.error(err);
-        callback(err, null);
+        const response = {
+            message: err.message
+        }
+        return response;
     }
 }
