@@ -1,5 +1,7 @@
 # QuickAid
 
+iOS repo is [here](https://github.com/nowperson/QuickRestart-iOS)
+
 ## Team Member
 - Seita Uchimura (seita-uc)
 - Hiroki Nanjo (nandehu0323)
