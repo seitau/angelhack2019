@@ -4,7 +4,7 @@
 			"service": "DynamoDB",
 			"providerPlugin": "awscloudformation"
 		},
-		"dynamo87938b66": {
+		"dynamo12541bc6": {
 			"service": "DynamoDB",
 			"providerPlugin": "awscloudformation"
 		}
